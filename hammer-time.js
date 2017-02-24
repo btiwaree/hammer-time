@@ -79,7 +79,18 @@ window.Hammer.time = {
 
 			// Wait for next tic so events fire in proper order
 			setTimeout( function() {
-				e.target.click();
+				var node = e.target;
+
+				// because of a bug related to iOS 9 etc where if the target of the touch event
+				// is a SVG element, e.target.click is undefined.
+				// See https://github.com/hammerjs/hammer-time/issues/22
+				// The temporary fix is to traverse parentNode until node.click is defined.
+				while ( node && !node.click ) {
+					node = node.parentNode;
+				}
+				if ( node ) {
+					node.click();
+				}
 			}, 0 );
 		}
 
